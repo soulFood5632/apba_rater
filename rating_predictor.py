@@ -29,4 +29,16 @@ def cd_face_off_rating(faceoff_wins: int, faceoff_losses: int, prev_rating: int)
     return prev_rating + adjustment_rate * (ci_face_off_rating(faceoff_wins, faceoff_losses) - prev_rating)
 
 
-print(ci_face_off_rating(100, 100))
+def scale_to(input: float, max: int, min: int):
+    """ Scales the provided input from 0 to 1 to the provided min and max values
+
+    :param input: The input to be scaled
+    :param max: The maximum value of the input
+    :param min: The minimum value of the input
+    :returns: The scaled value of the input
+    """
+
+    def scaler(x):
+        return (max - min) * x + min
+
+    return int(round(scaler(input)))
