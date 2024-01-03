@@ -20,6 +20,15 @@ def load_all_apba():
     return all_apba
 
 
+def load_hr(years):
+    hr = pd.DataFrame()
+    for year in years:
+        year_data = pd.read_csv("HockeyRef_Data_Files/" + year + '_CompleteData' + ".csv")
+        hr = hr._append(year_data, ignore_index=True)
+
+    return hr
+
+
 def __filter_cols(df: pd.DataFrame):
     """Filters the columns of the dataframe to only include the relevant columns"""
 
