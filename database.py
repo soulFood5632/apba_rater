@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 
+
 def load_all_apba():
     """ loads all the hb_data from the apba folder and prepares it as a pandas dataframe with the year. """
     all_apba = pd.DataFrame()
@@ -18,6 +19,7 @@ def load_all_apba():
 
     return all_apba
 
+
 def __filter_cols(df: pd.DataFrame):
     """Filters the columns of the dataframe to only include the relevant columns"""
 
@@ -25,5 +27,3 @@ def __filter_cols(df: pd.DataFrame):
     good_cols += [col for col in df.columns if col.startswith("Rate")]
 
     return df.filter(items=good_cols)
-
-
