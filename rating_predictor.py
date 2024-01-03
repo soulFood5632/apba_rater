@@ -6,6 +6,7 @@ def ci_face_off_rating(facoff_wins: int, faceoff_losses: int):
 
     The adjustables values are the constants in the win_comp and
      total_comp equations. These values have been verified
+     Logan sucks
     """
 
     win_pct = facoff_wins / (facoff_wins + faceoff_losses)
