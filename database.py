@@ -2,11 +2,11 @@ import os
 import pandas as pd
 
 
-def load_all_apba():
+def load_all_apba(dir: str):
     """ loads all the hb_data from the apba folder and prepares it as a pandas dataframe with the year. """
     all_apba = pd.DataFrame()
     # gets the list of all files in the apba folder.
-    for file in os.listdir("apba_data"):
+    for file in os.listdir(dir + "apba_data"):
         # this should never be false
         if file.endswith(".csv"):
             # the year is in the last two digits of the file name beofre the .csv
