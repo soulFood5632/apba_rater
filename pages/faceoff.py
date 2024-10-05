@@ -1,5 +1,9 @@
 import streamlit as st
 
+
+def approach():
+    st.write_stream()
+
 def main():
     st.title("Faceoff Ratings")
 
