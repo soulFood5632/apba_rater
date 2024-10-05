@@ -103,5 +103,5 @@ def scale_to(input: float, max: int, min: int):
     return int(round(scaler(input)))
 
 # print(ci_defense_rating(1351, 1.4, 1.75, 41.85, 69.2, 'LD', -3.7))
-print('ready tp go')
+
 
