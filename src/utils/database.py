@@ -6,12 +6,12 @@ def load_all_apba():
     """ Loads all the hb_data from the apba folder and prepares it as a pandas dataframe with the year. """
     all_apba = pd.DataFrame()
     # gets the list of all files in the apba folder.
-    for file in os.listdir("../../data/apba_data"):
+    for file in os.listdir("data/apba_data"):
         # this should never be false
         if file.endswith(".csv"):
             # the year is in the last two digits of the file name beofre the .csv
             year = file.split(".")[0][-2:]
-            year_data = pd.read_csv("apba_data/" + file)
+            year_data = pd.read_csv("data/apba_data/" + file)
             year_data["year"] = year
 
             all_apba = all_apba._append(year_data, ignore_index=True)
@@ -23,7 +23,7 @@ def load_all_apba():
 def load_hr(years):
     hr = pd.DataFrame()
     for year in years:
-        year_data = pd.read_csv("hockey_ref/" + year + '_CompleteData' + ".csv")
+        year_data = pd.read_csv("data/hockey_ref/" + year + '_CompleteData' + ".csv")
         hr = hr._append(year_data, ignore_index=True)
 
     return hr
