@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 import numpy as np
 
 defense_position = ['LD', 'RD', 'D']
@@ -11,14 +13,18 @@ def ci_face_off_rating(games_played: int, facoff_wins: int, faceoff_losses: int)
      total_comp equations. These values have been verified
     """
 
-    win_pct = np.divide(facoff_wins, (facoff_wins + faceoff_losses),
-                        where=(facoff_wins + faceoff_losses) != 0, out=np.zeros_like(facoff_wins).astype(float))
+    win_pct = np.divide(
+        facoff_wins, (facoff_wins + faceoff_losses),
+        where=(facoff_wins + faceoff_losses) != 0, out=np.zeros_like(facoff_wins).astype(float)
+    )
     fo_total = (facoff_wins + faceoff_losses) * 82 / games_played
     # these constants have been verified through testing. You can see the documentation for example graphs.
     win_comp = 1 / (1 + np.exp(-24.9 * (win_pct - 0.5)))
     total_comp = 1.6 / (1 + np.exp(-0.005 * (fo_total - 250))) - 0.4
-
-    return win_comp * total_comp
+    if facoff_wins + faceoff_losses > 50:
+        return max(1, win_comp * total_comp * 5)
+    
+    return win_comp * total_comp * 5
 
 
 def cd_face_off_rating(games_played: int, faceoff_wins: int, faceoff_losses: int, prev_rating: int):
@@ -34,7 +40,10 @@ def cd_face_off_rating(games_played: int, faceoff_wins: int, faceoff_losses: int
             ci_face_off_rating(games_played, faceoff_wins, faceoff_losses) - prev_rating)
 
 
-def ci_defense_rating(ATOI: int, GA_60: float, GF_60: float, eGA_60: float, eGF_60: float, corsi_a_60: float, d_zone_start: float, position: str, corsi_relative: float):
+def ci_defense_rating(
+    ATOI: int, GA_60: float, GF_60: float, eGA_60: float, eGF_60: float, corsi_a_60: float, d_zone_start: float,
+    position: str, corsi_relative: float
+):
     """ Caclulates the contex indepedent defence rating for a player
 
     :param corsi_relative: the relative corsi of the given player
@@ -65,16 +74,19 @@ def ci_defense_rating(ATOI: int, GA_60: float, GF_60: float, eGA_60: float, eGF_
     expected_goals_rating = 1.5 / (1 + np.exp(3 / 0.75 * (eGA_60 - 2.25)))
     goals_against_rating = 1.5 / (1 + np.exp(3 / 1 * (GA_60 - 2.5)))
 
-    expected_goals_rating = expected_goals_rating - 0.4 / (1 + np.exp(5 * (expected_goals_rating - 0.8))) / (1 + np.exp(-2 * (eGF_60 - 3)))
+    expected_goals_rating = expected_goals_rating - 0.4 / (1 + np.exp(5 * (expected_goals_rating - 0.8))) / (
+            1 + np.exp(-2 * (eGF_60 - 3)))
     goals_against_rating = goals_against_rating - 0.4 / (1 + np.exp(5 * (goals_against_rating - 0.8))) / (
-                1 + np.exp(-2 * (GF_60 - 3)))
+            1 + np.exp(-2 * (GF_60 - 3)))
     d_zone_adj = 0.2 / (1 + np.exp(-3 / 20 * (d_zone_start - 50))) - 0.1
 
     corsi_a_adj = 0.3 / (1 + np.exp(3 / 10 * (corsi_a_60 - 45))) - 0.15
 
-    toi_adj = np.where(np.isin(position, defense_position),
-                       0.3 / (1 + np.exp(-3 / 5 * (ATOI / 60.0 - 20))) + 0.81,
-                       0.1 / (1 + np.exp(-3 / 3 * (ATOI / 60.0 - 15))) + 0.95)
+    toi_adj = np.where(
+        np.isin(position, defense_position),
+        0.3 / (1 + np.exp(-3 / 5 * (ATOI / 60.0 - 20))) + 0.81,
+        0.1 / (1 + np.exp(-3 / 3 * (ATOI / 60.0 - 15))) + 0.95
+    )
 
     corsi_adj = 0.1 / (1 + np.exp(-3 / 5 * corsi_relative)) - 0.05
 
@@ -86,6 +98,26 @@ def ci_defense_rating(ATOI: int, GA_60: float, GF_60: float, eGA_60: float, eGF_
     # print('toi_adj', toi_adj)
 
     return toi_adj * (7 * expected_goals_rating + 3 * goals_against_rating) / 10 + d_zone_adj + corsi_adj + corsi_a_adj
+
+
+def bucketing_and_map(prob_dist: Dict[int, float], items: List[float]):
+    assert sum(prob_dist.values()) == 1, "The probability distribution must sum to 1"
+    summed_probs = {}
+    prev_value = 0
+    for key, value in prob_dist.items():
+        summed_probs[key] = value + prev_value
+        prev_value = summed_probs[key]
+
+    cutoffs = {k: np.percentile(items, v * 100) for k, v in summed_probs.items()}
+    print(cutoffs)
+
+    def map_func(x):
+        for k, cutoff in cutoffs.items():
+            if x <= cutoff:
+                return k
+        return max(cutoffs.keys())
+
+    return [map_func(x) for x in items]
 
 
 def scale_to(input: float, max: int, min: int):
@@ -102,6 +134,13 @@ def scale_to(input: float, max: int, min: int):
 
     return int(round(scaler(input)))
 
+
 # print(ci_defense_rating(1351, 1.4, 1.75, 41.85, 69.2, 'LD', -3.7))
 
-
+if __name__ == "__main__":
+    print(
+        bucketing_and_map(
+            {1: 0.5, 2: 0.5},
+            [0.1, 0.5, 0.7, 10, 0.6, 0.2, 0.7]
+        )
+    )

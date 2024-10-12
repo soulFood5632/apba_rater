@@ -12,7 +12,7 @@ def load_all_apba():
             # the year is in the last two digits of the file name beofre the .csv
             year = file.split(".")[0][-2:]
             year_data = pd.read_csv("data/apba_data/" + file)
-            year_data["year"] = year
+            year_data["season"] = f"{int(year) - 1}-{year}"
 
             all_apba = all_apba._append(year_data, ignore_index=True)
     all_apba = __filter_cols(all_apba)
@@ -31,8 +31,19 @@ def load_hr(years):
 
 def __filter_cols(df: pd.DataFrame):
     """Filters the columns of the apba data so that the columns for First, Last, year, and any rating columns remain."""
+    full_names = []
 
-    good_cols = ['Last', 'First', 'year']
+    for first, last in zip(df["First"], df["Last"]):
+        if "." in last:
+            last = last.split(".")[1].strip()
+        full_names.append(f"{first} {last}")
+        
+    df["Player"] = full_names
+    df["RateLWDefence"] = df["RateLWDefense"]
+    df["RateRWDefence"] = df["RateRwDefence"]
+    df = df.drop(columns=["RateLWDefense", "RateRwDefence"])
+
+    good_cols = ['Player', 'season']
     good_cols += [col for col in df.columns if col.startswith("Rate")]
 
     return df.filter(items=good_cols)
