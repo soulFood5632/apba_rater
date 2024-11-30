@@ -40,7 +40,8 @@ def filtered_rating_data(
 
         rating_filtered[f"HB{rating}"] = defense_rating
     else:
-        rating_filtered = ground_truth_data[["Player", "season", f"HB{rating}"]]
+        rating_filtered = ground_truth_data[["Player", "season", f"Rate{rating}"]]
+        rating_filtered = rating_filtered.rename(columns={f"Rate{rating}": f"HB{rating}"})
 
     generated_data_rating = generated_data[rating]
 
