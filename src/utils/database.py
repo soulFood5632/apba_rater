@@ -24,6 +24,7 @@ def load_hr(years):
     hr = pd.DataFrame()
     for year in years:
         year_data = pd.read_csv("data/hockey_ref/" + year + '_CompleteData' + ".csv")
+        # TODO: change this logic to be of better style
         hr = hr._append(year_data, ignore_index=True)
 
     return hr
@@ -37,7 +38,7 @@ def __filter_cols(df: pd.DataFrame):
         if "." in last:
             last = last.split(".")[1].strip()
         full_names.append(f"{first} {last}")
-        
+
     df["Player"] = full_names
     df["RateLWDefence"] = df["RateLWDefense"]
     df["RateRWDefence"] = df["RateRwDefence"]

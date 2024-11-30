@@ -12,6 +12,7 @@ available_stats = ["Faceoff", "Defence", "Passing"]
 ground_truth_data = load_all_apba()
 generated_data = {
     "Faceoff": pd.read_csv("data/generated/FaceoffRating.csv"),
+    "Defence": pd.read_csv("data/generated/DefenceRating.csv"),
 }
 
 name_options = {f"{player_name}" for player_name in ground_truth_data["Player"]}
@@ -47,7 +48,7 @@ def filtered_rating_data(
     generated_data_rating = generated_data[rating]
 
     merged = pd.merge(
-        rating_filtered, generated_data_rating, on=["Player", "season"],
+        generated_data_rating, rating_filtered, on=["Player", "season"],
         how="inner" if ignore_failed_matches else "outer"
     )
 

@@ -23,7 +23,7 @@ def ci_face_off_rating(games_played: int, facoff_wins: int, faceoff_losses: int)
     total_comp = 1.6 / (1 + np.exp(-0.005 * (fo_total - 250))) - 0.4
     if facoff_wins + faceoff_losses > 50:
         return max(1, win_comp * total_comp * 5)
-    
+
     return win_comp * total_comp * 5
 
 
