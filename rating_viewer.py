@@ -24,9 +24,6 @@ def filtered_rating_data(
     rating: str, selected_players: List[str], selected_years: List[str], ignore_failed_matches:
     bool
 ):
-    # this below code prepares the apba data for the selected players and years.
-    print(ground_truth_data.columns)
-
     if rating == "Defence":
         defense_rating = [
             max(x) for x in zip(
@@ -41,9 +38,9 @@ def filtered_rating_data(
             ["Player", "season"]
         ]
 
-        rating_filtered[f"Rate{rating}"] = defense_rating
+        rating_filtered[f"HB{rating}"] = defense_rating
     else:
-        rating_filtered = ground_truth_data[["Player", "season", f"Rate{rating}"]]
+        rating_filtered = ground_truth_data[["Player", "season", f"HB{rating}"]]
 
     generated_data_rating = generated_data[rating]
 
