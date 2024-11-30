@@ -8,7 +8,7 @@ from src.utils.database import load_hr, load_all_apba
 
 st.set_page_config(layout="wide")
 
-available_stats = ["Faceoff", "Defence", "Passing"]
+available_stats = ["Faceoff", "Defence"]
 ground_truth_data = load_all_apba()
 generated_data = {
     "Faceoff": pd.read_csv("data/generated/FaceoffRating.csv"),
