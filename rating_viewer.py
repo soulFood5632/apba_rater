@@ -71,7 +71,7 @@ def main():
     selected_years = st.multiselect(
         "Choose years...", options=year_options, default=sorted({x for x in year_options})[5:]
     )
-    selected_positions = st.multiselect("Choose positions...", options=["C", "RW", "LW", "LD", "RD"], default=[])
+    selected_positions = st.multiselect("Choose positions...", options=["C", "RW", "LW", "D"], default=[])
     # TODO add a slider for the ratings
     # allowed_ratings = st.select_slider("Choose range of ratings...", options=[0, 1, 2, 3, 4, 5], value=(0, 5))
 
@@ -80,7 +80,7 @@ def main():
     if len(selected_players) == 0:
         selected_players = name_options
     if len(selected_positions) == 0:
-        selected_positions = ["C", "RW", "LW", "LD", "RD"]
+        selected_positions = ["C", "RW", "LW", "D"]
 
     st.header("Rating Reviewer")
     st.write("The column with `HB` is the ground truth data")
