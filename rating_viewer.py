@@ -21,8 +21,8 @@ year_options = {f"{year}" for year in ground_truth_data["season"]}
 
 
 def filtered_rating_data(
-    rating: str, selected_players: List[str], selected_years: List[str], ignore_failed_matches:
-    bool
+    rating: str, selected_players: List[str], selected_years: List[str], selected_positions: List[str],
+    ignore_failed_matches: bool
 ):
     if rating == "Defence":
         defense_rating = [
@@ -56,7 +56,9 @@ def filtered_rating_data(
 
     year_filtered = name_filtered[name_filtered["season"].isin(selected_years)]
 
-    return year_filtered
+    position_filtered = year_filtered[year_filtered["Pos"].isin(selected_positions)]
+
+    return position_filtered
 
 
 def main():
@@ -69,6 +71,7 @@ def main():
     selected_years = st.multiselect(
         "Choose years...", options=year_options, default=sorted({x for x in year_options})[5:]
     )
+    selected_positions = st.multiselect("Choose positions...", options=["C", "RW", "LW", "LD", "RD"], default=[])
     # TODO add a slider for the ratings
     # allowed_ratings = st.select_slider("Choose range of ratings...", options=[0, 1, 2, 3, 4, 5], value=(0, 5))
 
@@ -76,12 +79,14 @@ def main():
         selected_years = sorted({x for x in year_options})
     if len(selected_players) == 0:
         selected_players = name_options
+    if len(selected_positions) == 0:
+        selected_positions = ["C", "RW", "LW", "LD", "RD"]
 
     st.header("Rating Reviewer")
-    st.write("The column with `Rate` is the ground truth data")
+    st.write("The column with `HB` is the ground truth data")
     ignore_not_matches = st.checkbox("Ignore not matched names", value=True)
     prepared_frame = filtered_rating_data(
-        rating, selected_players, selected_years, ignore_not_matches
+        rating, selected_players, selected_years, selected_positions, ignore_not_matches
     ).sort_values(by="season", ascending=False).reset_index(drop=True)
     st.dataframe(
         prepared_frame,
